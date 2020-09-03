@@ -1,14 +1,14 @@
-package org.qcri.rheem.tests;
+package io.rheem.rheem.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.qcri.rheem.api.JavaPlanBuilder;
-import org.qcri.rheem.api.LoadCollectionDataQuantaBuilder;
-import org.qcri.rheem.api.MapDataQuantaBuilder;
-import org.qcri.rheem.core.api.RheemContext;
-import org.qcri.rheem.core.util.RheemArrays;
-import org.qcri.rheem.java.Java;
-import org.qcri.rheem.spark.Spark;
+import io.rheem.rheem.api.JavaPlanBuilder;
+import io.rheem.rheem.api.LoadCollectionDataQuantaBuilder;
+import io.rheem.rheem.api.MapDataQuantaBuilder;
+import io.rheem.rheem.core.api.RheemContext;
+import io.rheem.rheem.core.util.RheemArrays;
+import io.rheem.rheem.java.Java;
+import io.rheem.rheem.spark.Spark;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class RegressionIT {
 
     /**
-     * This plan revealed an issue with the {@link org.qcri.rheem.core.optimizer.channels.ChannelConversionGraph.ShortestTreeSearcher}.
+     * This plan revealed an issue with the {@link io.rheem.rheem.core.optimizer.channels.ChannelConversionGraph.ShortestTreeSearcher}.
      */
     @Test
     public void testCollectionToRddAndBroadcast() {

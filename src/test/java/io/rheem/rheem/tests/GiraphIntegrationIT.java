@@ -1,15 +1,15 @@
-package org.qcri.rheem.tests;
+package io.rheem.rheem.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.qcri.rheem.basic.data.Tuple2;
-import org.qcri.rheem.core.api.RheemContext;
-import org.qcri.rheem.core.plan.rheemplan.RheemPlan;
-import org.qcri.rheem.giraph.Giraph;
-import org.qcri.rheem.graphchi.GraphChi;
-import org.qcri.rheem.java.Java;
-import org.qcri.rheem.spark.Spark;
-import org.qcri.rheem.tests.RheemPlans;
+import io.rheem.rheem.basic.data.Tuple2;
+import io.rheem.rheem.core.api.RheemContext;
+import io.rheem.rheem.core.plan.rheemplan.RheemPlan;
+import io.rheem.rheem.giraph.Giraph;
+import io.rheem.rheem.graphchi.GraphChi;
+import io.rheem.rheem.java.Java;
+import io.rheem.rheem.spark.Spark;
+import io.rheem.rheem.tests.RheemPlans;
 
 import java.util.ArrayList;
 import java.util.List;

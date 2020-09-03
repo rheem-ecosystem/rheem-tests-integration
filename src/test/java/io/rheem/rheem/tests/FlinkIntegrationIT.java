@@ -1,17 +1,17 @@
-package org.qcri.rheem.tests;
+package io.rheem.rheem.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.qcri.rheem.basic.data.Tuple2;
-import org.qcri.rheem.core.api.Job;
-import org.qcri.rheem.core.api.RheemContext;
-import org.qcri.rheem.core.api.exception.RheemException;
-import org.qcri.rheem.core.plan.rheemplan.RheemPlan;
-import org.qcri.rheem.core.plugin.Plugin;
-import org.qcri.rheem.core.util.RheemCollections;
-import org.qcri.rheem.flink.Flink;
-import org.qcri.rheem.java.Java;
-import org.qcri.rheem.tests.platform.MyMadeUpPlatform;
+import io.rheem.rheem.basic.data.Tuple2;
+import io.rheem.rheem.core.api.Job;
+import io.rheem.rheem.core.api.RheemContext;
+import io.rheem.rheem.core.api.exception.RheemException;
+import io.rheem.rheem.core.plan.rheemplan.RheemPlan;
+import io.rheem.rheem.core.plugin.Plugin;
+import io.rheem.rheem.core.util.RheemCollections;
+import io.rheem.rheem.flink.Flink;
+import io.rheem.rheem.java.Java;
+import io.rheem.rheem.tests.platform.MyMadeUpPlatform;
 
 import java.io.File;
 import java.io.IOException;

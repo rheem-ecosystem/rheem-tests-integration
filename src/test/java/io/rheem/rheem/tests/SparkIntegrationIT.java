@@ -1,26 +1,23 @@
-package org.qcri.rheem.tests;
+package io.rheem.rheem.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.qcri.rheem.basic.RheemBasics;
-import org.qcri.rheem.basic.data.Tuple2;
-import org.qcri.rheem.basic.operators.CollectionSource;
-import org.qcri.rheem.basic.operators.FilterOperator;
-import org.qcri.rheem.basic.operators.LocalCallbackSink;
-import org.qcri.rheem.basic.operators.MapOperator;
-import org.qcri.rheem.core.api.Job;
-import org.qcri.rheem.core.api.RheemContext;
-import org.qcri.rheem.core.api.exception.RheemException;
-import org.qcri.rheem.core.function.ExecutionContext;
-import org.qcri.rheem.core.function.FunctionDescriptor;
-import org.qcri.rheem.core.function.PredicateDescriptor;
-import org.qcri.rheem.core.function.TransformationDescriptor;
-import org.qcri.rheem.core.plan.rheemplan.RheemPlan;
-import org.qcri.rheem.core.types.DataSetType;
-import org.qcri.rheem.core.types.DataUnitType;
-import org.qcri.rheem.core.util.RheemCollections;
-import org.qcri.rheem.java.Java;
-import org.qcri.rheem.tests.platform.MyMadeUpPlatform;
+import io.rheem.rheem.basic.RheemBasics;
+import io.rheem.rheem.basic.data.Tuple2;
+import io.rheem.rheem.basic.operators.CollectionSource;
+import io.rheem.rheem.basic.operators.FilterOperator;
+import io.rheem.rheem.basic.operators.LocalCallbackSink;
+import io.rheem.rheem.core.api.Configuration;
+import io.rheem.rheem.core.api.Job;
+import io.rheem.rheem.core.api.RheemContext;
+import io.rheem.rheem.core.api.exception.RheemException;
+import io.rheem.rheem.core.function.ExecutionContext;
+import io.rheem.rheem.core.function.PredicateDescriptor;
+import io.rheem.rheem.core.plan.rheemplan.RheemPlan;
+import io.rheem.rheem.core.types.DataSetType;
+import io.rheem.rheem.core.util.RheemCollections;
+import io.rheem.rheem.spark.Spark;
+import io.rheem.rheem.tests.platform.MyMadeUpPlatform;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -38,9 +35,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Test the Java integration with Rheem.
+ * Test the Spark integration with Rheem.
  */
-public class JavaIntegrationIT {
+public class SparkIntegrationIT {
 
     @Test
     public void testReadAndWrite() throws URISyntaxException, IOException {
@@ -48,8 +45,8 @@ public class JavaIntegrationIT {
         List<String> collector = new LinkedList<>();
         RheemPlan rheemPlan = RheemPlans.readWrite(RheemPlans.FILE_SOME_LINES_TXT, collector);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         // Have Rheem execute the plan.
         rheemContext.execute(rheemPlan);
@@ -64,8 +61,8 @@ public class JavaIntegrationIT {
         // Build a Rheem plan.
         final RheemPlan rheemPlan = RheemPlans.readTransformWrite(RheemPlans.FILE_SOME_LINES_TXT);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         // Have Rheem execute the plan.
         rheemContext.execute(rheemPlan);
@@ -78,8 +75,9 @@ public class JavaIntegrationIT {
         // ILLEGAL: This platform is not registered, so this operator will find no implementation.
         rheemPlan.getSinks().forEach(sink -> sink.addTargetPlatform(MyMadeUpPlatform.getInstance()));
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
+
 
         // Have Rheem execute the plan.
         rheemContext.execute(rheemPlan);
@@ -106,13 +104,13 @@ public class JavaIntegrationIT {
         // Build a Rheem plan.
         final RheemPlan rheemPlan = RheemPlans.readTransformWrite(RheemPlans.FILE_SOME_LINES_TXT);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         // Have Rheem execute the plan.
         final Job job = rheemContext.createJob(null, rheemPlan);
-        // ILLEGAL: We blacklist the Java platform, although we need it.
-        job.getConfiguration().getPlatformProvider().addToBlacklist(Java.platform());
+        // ILLEGAL: We blacklist the Spark platform, although we need it.
+        job.getConfiguration().getPlatformProvider().addToBlacklist(Spark.platform());
         job.getConfiguration().getPlatformProvider().addToWhitelist(MyMadeUpPlatform.getInstance());
         job.execute();
     }
@@ -120,14 +118,14 @@ public class JavaIntegrationIT {
     @Test
     public void testMultiSourceAndMultiSink() throws URISyntaxException {
         // Define some input data.
-        final List<String> collection1 = Arrays.<String>asList("This is source 1.", "This is source 1, too.");
-        final List<String> collection2 = Arrays.<String>asList("This is source 2.", "This is source 2, too.");
+        final List<String> collection1 = Arrays.asList("This is source 1.", "This is source 1, too.");
+        final List<String> collection2 = Arrays.asList("This is source 2.", "This is source 2, too.");
         List<String> collector1 = new LinkedList<>();
         List<String> collector2 = new LinkedList<>();
         final RheemPlan rheemPlan = RheemPlans.multiSourceMultiSink(collection1, collection2, collector1, collector2);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         // Have Rheem execute the plan.
         rheemContext.execute(rheemPlan);
@@ -149,14 +147,14 @@ public class JavaIntegrationIT {
     @Test
     public void testMultiSourceAndHoleAndMultiSink() throws URISyntaxException {
         // Define some input data.
-        final List<String> collection1 = Arrays.<String>asList("This is source 1.", "This is source 1, too.");
-        final List<String> collection2 = Arrays.<String>asList("This is source 2.", "This is source 2, too.");
+        final List<String> collection1 = Arrays.asList("This is source 1.", "This is source 1, too.");
+        final List<String> collection2 = Arrays.asList("This is source 2.", "This is source 2, too.");
         List<String> collector1 = new LinkedList<>();
         List<String> collector2 = new LinkedList<>();
         final RheemPlan rheemPlan = RheemPlans.multiSourceHoleMultiSink(collection1, collection2, collector1, collector2);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         // Have Rheem execute the plan.
         rheemContext.execute(rheemPlan);
@@ -179,7 +177,7 @@ public class JavaIntegrationIT {
         RheemPlan rheemPlan = RheemPlans.globalMaterializedGroup(collector, 1, 2, 3);
 
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
 
@@ -194,8 +192,7 @@ public class JavaIntegrationIT {
         RheemPlan rheemPlan = RheemPlans.intersectSquares(collector, 0, 1, 2, 3, 3, -1, -1, -2, -3, -3, -4);
 
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext();
-        rheemContext.register(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
 
@@ -210,7 +207,7 @@ public class JavaIntegrationIT {
 
         // Instantiate Rheem and activate the Java backend.
         RheemContext rheemContext = new RheemContext()
-                .with(Java.basicPlugin());
+                .with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
 
@@ -235,7 +232,7 @@ public class JavaIntegrationIT {
 
         // Execute the plan with a certain backend.
         RheemContext rheemContext = new RheemContext()
-                .with(Java.basicPlugin())
+                .with(Spark.basicPlugin())
                 .with(RheemBasics.graphPlugin());
         rheemContext.execute(rheemPlan);
 
@@ -248,8 +245,9 @@ public class JavaIntegrationIT {
         );
     }
 
+
     @Test
-    public void testPageRankWithJavaGraph() {
+    public void testPageRankWithSparkGraph() {
         // Build the RheemPlan.
         List<Tuple2<Long, Long>> edges = Arrays.asList(
                 new Tuple2<>(0L, 1L),
@@ -265,8 +263,8 @@ public class JavaIntegrationIT {
 
         // Execute the plan with a certain backend.
         RheemContext rheemContext = new RheemContext()
-                .with(Java.basicPlugin())
-                .with(Java.graphPlugin());
+                .with(Spark.basicPlugin())
+                .with(Spark.graphPlugin());
         rheemContext.execute(rheemPlan);
 
         // Check the results.
@@ -281,7 +279,7 @@ public class JavaIntegrationIT {
     @Test
     public void testMapPartitions() throws URISyntaxException {
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         // Execute the Rheem plan.
         final Collection<Tuple2<String, Integer>> result = RheemPlans.mapPartitions(rheemContext, 0, 1, 1, 3, 3, 4, 4, 5, 5, 6);
@@ -299,7 +297,7 @@ public class JavaIntegrationIT {
         RheemPlan rheemPlan = RheemPlans.zipWithId(collector, 0, 10, 20, 30, 30);
 
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
 
@@ -312,9 +310,8 @@ public class JavaIntegrationIT {
         // Build the RheemPlan.
         RheemPlan rheemPlan = RheemPlans.diverseScenario1(RheemPlans.FILE_SOME_LINES_TXT);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext();
-        rheemContext.register(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
     }
@@ -324,8 +321,8 @@ public class JavaIntegrationIT {
         // Build the RheemPlan.
         RheemPlan rheemPlan = RheemPlans.diverseScenario2(RheemPlans.FILE_SOME_LINES_TXT, RheemPlans.FILE_OTHER_LINES_TXT);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
     }
@@ -335,8 +332,8 @@ public class JavaIntegrationIT {
         // Build the RheemPlan.
         RheemPlan rheemPlan = RheemPlans.diverseScenario3(RheemPlans.FILE_SOME_LINES_TXT, RheemPlans.FILE_OTHER_LINES_TXT);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        // Instantiate Rheem and activate the Spark backend.
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
     }
@@ -347,7 +344,7 @@ public class JavaIntegrationIT {
         RheemPlan rheemPlan = RheemPlans.diverseScenario4(RheemPlans.FILE_SOME_LINES_TXT, RheemPlans.FILE_OTHER_LINES_TXT);
 
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
     }
@@ -359,7 +356,7 @@ public class JavaIntegrationIT {
         RheemPlan rheemPlan = RheemPlans.simpleLoop(3, collector, 0, 1, 2);
 
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
         System.out.println(collector);
@@ -372,30 +369,30 @@ public class JavaIntegrationIT {
         RheemPlan rheemPlan = RheemPlans.simpleSample(3, collector, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
         System.out.println(collector);
     }
 
     @Test
-    public void testLargerSample() throws URISyntaxException {
-        // Build the RheemPlan.
-        final List<Integer> collector = new LinkedList<>();
-        RheemPlan rheemPlan = RheemPlans.simpleSample(15, collector, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+    public void testSampleInLoop() {
+        final List<Integer> collector = new ArrayList<>();
+        RheemPlan rheemPlan = RheemPlans.sampleInLoop(2, 10, collector, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
-
+        Configuration config = new Configuration();
+        config.setProperty("spark.executor.cores", "1");
+        RheemContext rheemContext = new RheemContext(config)
+                .with(Spark.basicPlugin());
         rheemContext.execute(rheemPlan);
         System.out.println(collector);
     }
 
     @Test
     public void testCurrentIterationNumber() {
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
         final Collection<Integer> result = RheemPlans.loopWithIterationNumber(rheemContext, 15, 5, -1, 1, 5);
-        int expectedOffset = 5 * 4 / 2;
+        int expectedOffset = 10;
         Assert.assertEquals(
                 RheemCollections.asSet(-1 + expectedOffset, 1 + expectedOffset, 5 + expectedOffset),
                 RheemCollections.asSet(result)
@@ -404,15 +401,14 @@ public class JavaIntegrationIT {
 
     @Test
     public void testCurrentIterationNumberWithTooFewExpectedIterations() {
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
         final Collection<Integer> result = RheemPlans.loopWithIterationNumber(rheemContext, 15, 2, -1, 1, 5);
-        int expectedOffset = 5 * 4 / 2;
+        int expectedOffset = 10;
         Assert.assertEquals(
                 RheemCollections.asSet(-1 + expectedOffset, 1 + expectedOffset, 5 + expectedOffset),
                 RheemCollections.asSet(result)
         );
     }
-
 
     @Test
     public void testBroadcasts() {
@@ -422,29 +418,11 @@ public class JavaIntegrationIT {
         List<Integer> expectedValues = Arrays.asList(2, 2, 4);
 
         final DataSetType<Integer> integerDataSetType = DataSetType.createDefault(Integer.class);
-        CollectionSource<Integer> broadcastSource = new CollectionSource<>(broadcastedValues,
-                integerDataSetType);
-        CollectionSource<Integer> mainSource = new CollectionSource<>(mainValues,
-                integerDataSetType);
-        FilterOperator<Integer> semijoin = new FilterOperator<>(
-                integerDataSetType,
-                new PredicateDescriptor.ExtendedSerializablePredicate<Integer>() {
-
-                    private Set<Integer> allowedInts;
-
-                    @Override
-                    public void open(ExecutionContext ctx) {
-                        this.allowedInts = new HashSet<>(ctx.<Integer>getBroadcast("allowed values"));
-                    }
-
-                    @Override
-                    public boolean test(Integer integer) {
-                        return this.allowedInts.contains(integer);
-                    }
-                }
-        );
-        final LocalCallbackSink<Integer> collectingSink = LocalCallbackSink.createCollectingSink(collectedValues,
-                integerDataSetType);
+        CollectionSource<Integer> broadcastSource = new CollectionSource<>(broadcastedValues, integerDataSetType);
+        CollectionSource<Integer> mainSource = new CollectionSource<>(mainValues, integerDataSetType);
+        FilterOperator<Integer> semijoin = new FilterOperator<>(integerDataSetType, new SemijoinFunction());
+        final LocalCallbackSink<Integer> collectingSink =
+                LocalCallbackSink.createCollectingSink(collectedValues, integerDataSetType);
 
         mainSource.connectTo(0, semijoin, 0);
         broadcastSource.broadcastTo(0, semijoin, "allowed values");
@@ -453,7 +431,7 @@ public class JavaIntegrationIT {
         RheemPlan rheemPlan = new RheemPlan(collectingSink);
 
         // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin());
 
         rheemContext.execute(rheemPlan);
 
@@ -461,55 +439,18 @@ public class JavaIntegrationIT {
         Assert.assertEquals(expectedValues, collectedValues);
     }
 
-    @Test
-    public void testBroadcasts2() {
-        Collection<Integer> broadcastedValues = Arrays.asList(9);
-        Collection<Integer> mainValues = Arrays.asList(2, 4, 6, 2);
-        List<Integer> collectedValues = new ArrayList<>();
-        List<Integer> expectedValues = Arrays.asList(18, 18, 36, 54);
+    private static class SemijoinFunction implements PredicateDescriptor.ExtendedSerializablePredicate<Integer> {
 
-        final DataSetType<Integer> integerDataSetType = DataSetType.createDefault(Integer.class);
-        CollectionSource<Integer> broadcastSource = new CollectionSource<>(broadcastedValues,
-                integerDataSetType);
-        CollectionSource<Integer> mainSource = new CollectionSource<>(mainValues,
-                integerDataSetType);
-        MapOperator<Integer, Integer> mulitply = new MapOperator<>(
-                new TransformationDescriptor<>(
-                        new FunctionDescriptor.ExtendedSerializableFunction<Integer, Integer>() {
+        private Set<Integer> allowedInts;
 
-                            private int coefficient;
+        @Override
+        public void open(ExecutionContext ctx) {
+            this.allowedInts = new HashSet<>(ctx.getBroadcast("allowed values"));
+        }
 
-                            @Override
-                            public void open(ExecutionContext ctx) {
-                                final Collection<Integer> broadcast = ctx.<Integer>getBroadcast("allowed values");
-                                this.coefficient = broadcast.stream().findAny().get();
-                            }
-
-                            @Override
-                            public Integer apply(Integer integer) {
-                                return this.coefficient * integer;
-                            }
-                        },
-                        DataUnitType.createBasic(Integer.class),
-                        DataUnitType.createBasic(Integer.class)
-                ), integerDataSetType,
-                integerDataSetType
-        );
-        final LocalCallbackSink<Integer> collectingSink = LocalCallbackSink.createCollectingSink(collectedValues,
-                integerDataSetType);
-
-        mainSource.connectTo(0, mulitply, 0);
-        broadcastSource.broadcastTo(0, mulitply, "allowed values");
-        mulitply.connectTo(0, collectingSink, 0);
-
-        RheemPlan rheemPlan = new RheemPlan(collectingSink);
-
-        // Instantiate Rheem and activate the Java backend.
-        RheemContext rheemContext = new RheemContext().with(Java.basicPlugin());
-
-        rheemContext.execute(rheemPlan);
-
-        Collections.sort(collectedValues);
-        Assert.assertEquals(expectedValues, collectedValues);
+        @Override
+        public boolean test(Integer integer) {
+            return this.allowedInts.contains(integer);
+        }
     }
 }

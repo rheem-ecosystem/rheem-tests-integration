@@ -1,10 +1,10 @@
-package org.qcri.rheem.tests;
+package io.rheem.rheem.tests;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.qcri.rheem.core.api.exception.RheemException;
-import org.qcri.rheem.postgres.platform.PostgresPlatform;
+import io.rheem.rheem.core.api.exception.RheemException;
+import io.rheem.rheem.postgres.platform.PostgresPlatform;
 
 import java.sql.Connection;
 import java.sql.SQLException;
