@@ -1,13 +1,13 @@
-package io.rheem.rheem.tests;
+package io.rheem.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import io.rheem.rheem.basic.data.Tuple2;
-import io.rheem.rheem.core.api.RheemContext;
-import io.rheem.rheem.core.plan.rheemplan.RheemPlan;
-import io.rheem.rheem.graphchi.GraphChi;
-import io.rheem.rheem.java.Java;
-import io.rheem.rheem.spark.Spark;
+import io.rheem.basic.data.Tuple2;
+import io.rheem.core.api.RheemContext;
+import io.rheem.core.plan.rheemplan.RheemPlan;
+import io.rheem.graphchi.GraphChi;
+import io.rheem.java.Java;
+import io.rheem.spark.Spark;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,13 @@
-package io.rheem.rheem.tests.platform;
+package io.rheem.tests.platform;
 
-import io.rheem.rheem.core.api.Configuration;
-import io.rheem.rheem.core.mapping.Mapping;
-import io.rheem.rheem.core.optimizer.channels.ChannelConversion;
-import io.rheem.rheem.core.optimizer.costs.LoadProfileToTimeConverter;
-import io.rheem.rheem.core.optimizer.costs.TimeToCostConverter;
-import io.rheem.rheem.core.platform.Executor;
-import io.rheem.rheem.core.platform.Platform;
-import io.rheem.rheem.core.plugin.Plugin;
+import io.rheem.core.api.Configuration;
+import io.rheem.core.mapping.Mapping;
+import io.rheem.core.optimizer.channels.ChannelConversion;
+import io.rheem.core.optimizer.costs.LoadProfileToTimeConverter;
+import io.rheem.core.optimizer.costs.TimeToCostConverter;
+import io.rheem.core.platform.Executor;
+import io.rheem.core.platform.Platform;
+import io.rheem.core.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.Collections;
