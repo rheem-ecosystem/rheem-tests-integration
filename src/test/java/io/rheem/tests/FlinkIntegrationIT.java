@@ -1,6 +1,7 @@
 package io.rheem.tests;
 
-import io.rheem.platforms.PlatformPlugins;
+import io.rheem.flink.Flink;
+import io.rheem.java.Java;
 import org.junit.Assert;
 import org.junit.Test;
 import io.rheem.basic.data.Tuple2;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+
 /**
  * Test the Spark integration with Rheem.
  */
@@ -38,9 +41,9 @@ public class FlinkIntegrationIT {
     private RheemContext makeContext(String plugin){
         RheemContext rheemContext = new RheemContext();
         if(plugin == JAVA || plugin == BOTH)
-            rheemContext.with(PlatformPlugins.Java.basicPlugin());
+            rheemContext.with(Java.basicPlugin());
         if(plugin == FLINK || plugin == BOTH)
-            rheemContext.with(PlatformPlugins.Flink.basicPlugin());
+            rheemContext.with(Flink.basicPlugin());
         return rheemContext;
     }
 
@@ -133,6 +136,8 @@ public class FlinkIntegrationIT {
         RheemPlan rheemPlanJava = RheemPlansOperators.distinct(RheemPlans.FILE_SOME_LINES_TXT, collectorJava);
         makeAndRun(rheemPlanJava, JAVA);
 
+        System.out.println(collector);
+        System.out.println(collectorJava);
         Assert.assertEquals(collectorJava.stream().sorted().toArray(), collector.stream().sorted().toArray());
     }
 
@@ -307,7 +312,7 @@ public class FlinkIntegrationIT {
         // Have Rheem execute the plan.
         final Job job = rheemContext.createJob(null, rheemPlan);
         // ILLEGAL: We blacklist the Spark platform, although we need it.
-        job.getConfiguration().getPlatformProvider().addToBlacklist(PlatformPlugins.Flink.platform());
+        job.getConfiguration().getPlatformProvider().addToBlacklist(Flink.platform());
         job.getConfiguration().getPlatformProvider().addToWhitelist(MyMadeUpPlatform.getInstance());
         job.execute();
     }
@@ -402,7 +407,7 @@ public class FlinkIntegrationIT {
 
         // Execute the plan with a certain backend.
         RheemContext rheemContext = new RheemContext()
-                .with(PlatformPlugins.Flink.basicPlugin());
+                .with(Flink.basicPlugin());
                 //.with(RheemBasics.graphPlugin());
         rheemContext.execute(rheemPlan);
 

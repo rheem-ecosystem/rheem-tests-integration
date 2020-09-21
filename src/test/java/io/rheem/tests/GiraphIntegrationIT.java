@@ -1,6 +1,7 @@
 package io.rheem.tests;
 
-import io.rheem.platforms.PlatformPlugins;
+import io.rheem.java.Java;
+import io.rheem.giraph.Giraph;
 import org.junit.Assert;
 import org.junit.Test;
 import io.rheem.basic.data.Tuple2;
@@ -13,16 +14,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 /**
  * Integration tests for the integration of GraphChi with Rheem.
  */
 public class GiraphIntegrationIT {
 
-    @Test
+    //@Test
+    //TODO validate if this test is helpfull
     public void testPageRankWithJava() {
         List<Tuple2<Character, Float>> pageRanks = new ArrayList<>();
         RheemPlan rheemPlan = RheemPlans.pageRankWithDictionaryCompression(pageRanks);
-        RheemContext rc = new RheemContext().with(PlatformPlugins.Java.basicPlugin()).with(PlatformPlugins.Giraph.graphPlugin());
+        RheemContext rc = new RheemContext().with(Java.basicPlugin()).with(Giraph.plugin());
         rc.execute(rheemPlan);
 
         pageRanks.stream().forEach(System.out::println);
@@ -35,8 +38,8 @@ public class GiraphIntegrationIT {
         List<Tuple2<Character, Float>> pageRanks = new ArrayList<>();
         RheemPlan rheemPlan = RheemPlans.pageRankWithDictionaryCompression(pageRanks);
         RheemContext rc = new RheemContext()
-                .with(PlatformPlugins.Java.basicPlugin())
-                .with(PlatformPlugins.Java.graphPlugin());
+                .with(Java.basicPlugin())
+                .with(Java.graphPlugin());
         rc.execute(rheemPlan);
 
         this.check(pageRanks);

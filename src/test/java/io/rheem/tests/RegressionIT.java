@@ -1,6 +1,7 @@
 package io.rheem.tests;
 
-import io.rheem.platforms.PlatformPlugins;
+import io.rheem.java.Java;
+import io.rheem.spark.Spark;
 import org.junit.Assert;
 import org.junit.Test;
 import io.rheem.api.JavaPlanBuilder;
@@ -23,24 +24,24 @@ public class RegressionIT {
      */
     @Test
     public void testCollectionToRddAndBroadcast() {
-        RheemContext rheemContext = new RheemContext().with(PlatformPlugins.Spark.basicPlugin()).with(PlatformPlugins.Java.basicPlugin());
+        RheemContext rheemContext = new RheemContext().with(Spark.basicPlugin()).with(Java.basicPlugin());
         JavaPlanBuilder planBuilder = new JavaPlanBuilder(rheemContext, "testCollectionToRddAndBroadcast");
 
         LoadCollectionDataQuantaBuilder<String> collection = planBuilder
                 .loadCollection(Arrays.asList("a", "bc", "def"))
-                .withTargetPlatform(PlatformPlugins.Java.platform())
+                .withTargetPlatform(Java.platform())
                 .withName("collection");
 
         MapDataQuantaBuilder<String, Integer> map1 = collection
                 .map(String::length)
-                .withTargetPlatform(PlatformPlugins.Spark.platform());
+                .withTargetPlatform(Spark.platform());
 
         MapDataQuantaBuilder<Integer, Integer> map2 = planBuilder
                 .loadCollection(RheemArrays.asList(-1))
 
                 .map(i -> i)
                 .withBroadcast(collection, "broadcast")
-                .withTargetPlatform(PlatformPlugins.Spark.platform());
+                .withTargetPlatform(Spark.platform());
 
         ArrayList<Integer> result = new ArrayList<>(map1.union(map2).collect());
 

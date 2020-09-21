@@ -1,6 +1,8 @@
 package io.rheem.tests;
 
-import io.rheem.platforms.PlatformPlugins;
+import io.rheem.graphchi.GraphChi;
+import io.rheem.java.Java;
+import io.rheem.spark.Spark;
 import org.junit.Assert;
 import org.junit.Test;
 import io.rheem.basic.data.Tuple2;
@@ -22,7 +24,7 @@ public class GraphChiIntegrationIT {
     public void testPageRankWithJava() {
         List<Tuple2<Character, Float>> pageRanks = new ArrayList<>();
         RheemPlan rheemPlan = RheemPlans.pageRankWithDictionaryCompression(pageRanks);
-        RheemContext rc = new RheemContext().with(PlatformPlugins.Java.basicPlugin()).with(PlatformPlugins.GraphChi.graphPlugin());
+        RheemContext rc = new RheemContext().with(Java.basicPlugin()).with(GraphChi.plugin());
         rc.execute(rheemPlan);
 
         // Seems like a bug in GraphChi: One too many vertices.
@@ -35,9 +37,9 @@ public class GraphChiIntegrationIT {
     public void testPageRankWithSpark() {
         List<Tuple2<Character, Float>> pageRanks = new ArrayList<>();
         RheemPlan rheemPlan = RheemPlans.pageRankWithDictionaryCompression(pageRanks);
-        RheemContext rc = new RheemContext().with(PlatformPlugins.Spark.basicPlugin())
-                .with(PlatformPlugins.Java.channelConversionPlugin())
-                .with(PlatformPlugins.GraphChi.graphPlugin());
+        RheemContext rc = new RheemContext().with(Spark.basicPlugin())
+                .with(Java.channelConversionPlugin())
+                .with(GraphChi.plugin());
         rc.execute(rheemPlan);
 
         // Seems like a bug in GraphChi: One too many vertices.
@@ -49,9 +51,9 @@ public class GraphChiIntegrationIT {
     public void testPageRankWithoutGraphChi() {
         List<Tuple2<Character, Float>> pageRanks = new ArrayList<>();
         RheemPlan rheemPlan = RheemPlans.pageRankWithDictionaryCompression(pageRanks);
-        RheemContext rc = new RheemContext().with(PlatformPlugins.Spark.basicPlugin())
-                .with(PlatformPlugins.Java.basicPlugin())
-                .with(PlatformPlugins.Java.graphPlugin());
+        RheemContext rc = new RheemContext().with(Spark.basicPlugin())
+                .with(Java.basicPlugin())
+                .with(Java.graphPlugin());
         rc.execute(rheemPlan);
 
         this.check(pageRanks);
