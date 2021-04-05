@@ -1,32 +1,11 @@
-# Rheem Integration Test
+# Rheem has been transfer to Apache Incubator and rename as [Wayang](https://wayang.apache.org)
 
-`rheem-test-integration` is the repository, here you can found the implementation of the integration test, they allow the 
-validation of the components can work together
+<img src="./logo_rheem.png" style="width:200px"> ==> <img src="./logo_wayang.png" style="width:200px">
 
-## Enviroment definition
+You can find the latest version of the source code [inside the Apache Wayang repository](https://gitbox.apache.org/repos/asf?s=incubator-wayang), where it will continue to be developed.
 
-With scala 2.11
-```bash
-SCALA_VERSION=scala-11
-```
-With scala 2.12
-```bash
-SCALA_VERSION=scala-12
-```
+Please report any bugs to the [Jira issue tracker](https://issues.apache.org/jira/projects/WAYANG) directly.
 
-### How to compile
-```bash
-mvn clean compile -P antlr,scala,${SCALA_VERSION}
-```
+An archive of the source code before the merge is available [here](../../tree/archive).
 
-### How to create the package
-
-```bash
-mvn clean package -P antlr,scala,${SCALA_VERSION}
-```
-
-### How to deploy
-
-```bash
-mvn clean deploy -P central,antlr,scala,${SCALA_VERSION}
-```
+The repository rheem-test-integration it merge to apache wayang on the folder [wayang-tests-integration](https://github.com/apache/incubator-wayang/tree/main/wayang-tests-integration)
